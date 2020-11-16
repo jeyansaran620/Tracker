@@ -41,6 +41,29 @@ CustomersRouter.route('/')
     .catch((err) => next(err));    
 });
 
+CustomersRouter.route('/list')
+.get((req,res,next) => {
+    Customers.find({},{_id:1})
+    .then((Customers) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(Customers);
+    }, (err) => next(err))
+    .catch((err) => next(err));
+})
+.post((req, res) => {
+    res.statusCode = 403;
+    res.end('POST operation not supported on /Customers/list');
+})
+.put((req, res) => {
+    res.statusCode = 403;
+    res.end('PUT operation not supported on /Customers/list');
+})
+.delete((req, res) => {
+    res.statusCode = 403;
+    res.end('PUT operation not supported on /Customers/list');
+});
+
 CustomersRouter.route('/:customerID')
 .get((req,res,next) => {
     Customers.findById(req.params.customerID)

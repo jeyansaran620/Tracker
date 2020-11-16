@@ -89,7 +89,7 @@ ToolsRouter.route('/list')
 
 ToolsRouter.route('/rented')
 .get((req,res,next) => {
-    Tools.find({available:false})
+    Tools.find({available:false},{_id:1})
     .then((Tools) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
@@ -110,6 +110,28 @@ ToolsRouter.route('/rented')
     res.end('PUT operation not supported on /tools/rented');
 });
 
+ToolsRouter.route('/available')
+.get((req,res,next) => {
+    Tools.find({available:true},{_id:1})
+    .then((Tools) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(Tools);
+    }, (err) => next(err))
+    .catch((err) => next(err));
+})
+.post((req, res) => {
+    res.statusCode = 403;
+    res.end('POST operation not supported on /tools/rented');
+})
+.put((req, res) => {
+    res.statusCode = 403;
+    res.end('PUT operation not supported on /tools/rented');
+})
+.delete((req, res) => {
+    res.statusCode = 403;
+    res.end('PUT operation not supported on /tools/rented');
+});
 
 ToolsRouter.route('/:toolId')
 .get((req,res,next) => {
@@ -203,10 +225,37 @@ ToolsRouter.route('/:toolId/rentals')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.put((req, res) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /Tools/'
-        + req.params.toolId + '/rentals');
+.put((req, res, next) => {
+    Tools.findById(req.params.toolId)
+    .then((tool) => {
+
+        if (tool !== null) {
+
+                if (tool.available === true) {
+
+                    let err = new Error('Tool ' + req.params.toolId + ' already Returned');
+                      err.status = 400;
+                      return next(err);
+
+                  }
+
+            tool.rentals.id(tool.rentals[tool.rentals.length - 1]._id).dateReturned = req.body.dateReturned;
+            tool.available = true;
+
+            tool.save()
+            .then((tool) => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(tool);                
+            }, (err) => next(err));
+        }
+        else {
+          let err = new Error('tool ' + req.params.toolId + ' not found');
+            err.status = 404;
+            return next(err);
+        }
+    }, (err) => next(err))
+    .catch((err) => next(err));
 })
 .delete((req, res, next) => {
     Tools.findById(req.params.toolId)
