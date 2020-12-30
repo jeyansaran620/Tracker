@@ -106,7 +106,7 @@ class AddRental extends React.Component{
             .then(json => 
                 {
                     console.log(json);
-                    this.props.history.push("/Home");
+                    this.props.history.push(`/ViewTool/${json._id}`);
                 })
                 .catch((err) => {
                     console.log(err)
@@ -148,6 +148,7 @@ class AddRental extends React.Component{
         return (
             <div className="container">
                 <Form className="form" onSubmit={(e) => this.submitForm(e)}>
+                      <h4 style={{padding:"1.5rem"}}>New Rent</h4>
                     <FormGroup row className="p-2">
                         <Label className="col-4 text-center" for="toolName" ><h5>Tool:</h5></Label>
                         <div className="col-8 col-md-6 justify-content-center">
@@ -155,7 +156,7 @@ class AddRental extends React.Component{
                          style={{height:"2rem"}} id="toolName" placeholder="Select Type"  styles={customStyles}
                                 value={this.state.toolName} onChange={(e) => this.handleNameChange(e)} />
                             <FormText>
-                                {this.state.nameError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.nameError}</h6>}
+                                {this.state.nameError === '' ? null : <h6 >{this.state.nameError}</h6>}
                             </FormText>
                         </div>
                     </FormGroup>
@@ -167,7 +168,7 @@ class AddRental extends React.Component{
                          style={{height:"2rem"}} id="toolName" placeholder="Select Customer"  styles={customStyles}
                                 value={this.state.cusName} onChange={(e) => this.handleCusChange(e)} />
                             <FormText>
-                                {this.state.cusError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.cusError}</h6>}
+                                {this.state.cusError === '' ? null : <h6 >{this.state.cusError}</h6>}
                             </FormText>
                         </div>
                     </FormGroup>
@@ -178,20 +179,20 @@ class AddRental extends React.Component{
                             <Input type="date" style={{height:"2rem"}} id="dateToBeReturned" 
                                 value={this.state.dateToBeReturned} onChange={(e) => this.handleDateChange(e)} />
                             <FormText>
-                                {this.state.dateError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.dateError}</h6>}
+                                {this.state.dateError === '' ? null : <h6 >{this.state.dateError}</h6>}
                             </FormText>
                         </div>
                     </FormGroup>
                     <FormText>
-                        {this.state.fetchError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.fetchError}</h6>}
+                        {this.state.fetchError === '' ? null : <h6 >{this.state.fetchError}</h6>}
                     </FormText>
                     <FormGroup className="row p-2">
                       <div className="col-4 offset-1">
-                            <Button style={{backgroundColor:"rgb(50,50,50)",color:"floralWhite"}}
+                            <Button
                                 onClick={() => this.props.history.push("/AddTool")}>Add Tool</Button>
                         </div>
                         <div className="col-4 offset-2">
-                            <Button style={{backgroundColor:"rgb(50,50,50)",color:"floralWhite"}}
+                            <Button
                                 type = "submit" onClick={(e) => this.submitForm(e)}>Make Rent</Button>
                         </div>
                     </FormGroup>

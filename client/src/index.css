@@ -5,6 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #372C2E;
+  color: #FFFFFF;
 }
 
 code {
@@ -12,34 +14,142 @@ code {
     monospace;
 }
 
+a,a:visited,a:active {
+  color: inherit; /* blue colors for links too */
+  text-decoration: inherit; /* no underline */
+}
+
+a:hover
+{
+  color: #372C2E;
+  text-decoration: inherit; 
+}
+
 .navbar-dark {
-  border: 3px solid #C3073F;
-  background-color: #1A1A1D;
+  border: 3px solid #7A4313;
   border-radius: 5px;
   margin: 2px;
 }
 .navbarbrand {
-  font-size: 2rem;
-  color : rgb(228, 27, 27);
+  font-size: 1.5rem;
+  color : #7A4313;
   font-weight: bold;
 }
 
-
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6
+{
+  color: #DE9E48;
+}
 .jumbotron {
   padding:70px 30px 70px 30px;
   margin:0px auto;
-  background: linear-gradient(20deg, #950740 ,  #c93232);
+  background: linear-gradient(20deg, #563727 ,   #7A4313);
   position: relative;
 }
 
+.kernel
+{
+ min-height: 50vh;
+ align-items: center;
+}
 
 .form
 {
-  background-color: #1F2833;
   font-size: 0.7rem;
-  color: floralwhite;
+  color: #DE9E48;
   margin: 10px;
+  text-align: center; box-shadow: 0 0 0 #563727, 0 0 5px #DE9E48,0 0 0 #563727, 0 0 5px #DE9E48;
+}
+
+.form-control,input {
+  border-radius: 5px;
+  background-color: transparent;
+  border-color: #DE9E48;
+  color:#DE9E48;
+}
+.form-control:focus,input:focus {
+  border-color: #DE9E48;
+  color:#DE9E48;
+  background-color: transparent;
+  outline: 0;
+  box-shadow: 0 0 0 0.1rem #DE9E48;
+}
+
+
+.btn
+{
+  background-color:#563727;
+  color:floralWhite;
+}
+.btn:hover
+{
+ background-color: #7A4313;
+}
+.my-links > .btn{
+  background-color:transparent;
+  color: inherit;
+}
+.my-links > .btn:hover{
+  color: #372C2E;
+}
+.card
+{
+  background-color: inherit;
   border-radius: 5px;
   text-align: center;
-  box-shadow: 0 0 0 rgb(0,0,0), 0 0 5px rgb(245, 245, 245),0 0 0 rgb(0,0,0), 0 0 5px rgb(245, 245, 245);
+  box-shadow: 0 0 0 #563727, 0 0 5px #DE9E48,0 0 0 #563727, 0 0 5px #DE9E48;
+
+}
+
+.footer{
+  background-color:  #7A4313;
+  margin: 0px;
+  margin-top: 1rem;
+  padding: 20px 0px 20px 0px;
+}
+
+.linker
+{
+  cursor: pointer;
+}
+
+.linker:hover
+{
+  animation:  shake 0.3s;
+}
+
+@keyframes shake
+{
+0%
+{
+    transform: rotate(0deg);
+}
+20%
+{
+    transform: rotate(3deg);
+}
+40%
+{
+  transform: rotate(-3deg);
+}
+60%
+{
+    transform: rotate(3deg);
+}
+80%
+{
+  transform: rotate(-3deg);
+}
+100%
+{
+  transform: rotate(0deg);
+}
+}
+
+.NewBox
+{
+  height: 40vw;
+  width: 40vw;
+  margin-left: 30vw;
+  border : 2px solid whitesmoke;
 }

@@ -5,13 +5,13 @@ export const customStyles = {
     }),
     valueContainer: () => ({
       // none of react-select's styles are passed to <Control />
-      backgroundColor: "floralWhite",
+      backgroundColor: "transparent",
       borderRadius :  "5px",
+
     }),
     singleValue: (provided, state) => {
       const opacity = state.isDisabled ? 0.5 : 1;
       const transition = 'opacity 300ms';
-  
       return { ...provided, opacity, transition };
     }
   }

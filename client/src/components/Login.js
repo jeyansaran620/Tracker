@@ -40,12 +40,13 @@ class Login extends React.Component{
         }
         else
         {
-            const headers = {
+            const config = {
                 method:'GET', 
-                credentials: 'include',
-                headers: {'Authorization': 'Basic ' + btoa(`${this.state.username}:${this.state.password}`)}};
+                headers: {'Authorization': 'Basic ' + btoa(`${this.state.username}:${this.state.password}`)},
+                credentials: 'include'
+            };
 
-            fetch( `${hostname}login`, headers)
+            fetch( `${hostname}login`, config)
             .then(response => response.json())
             .then(json => 
                 {
@@ -94,13 +95,14 @@ class Login extends React.Component{
         return (
             <div className="container">
                 <Form className="form" onSubmit={(e) => this.submitForm(e)}>
+                  <h4 style={{padding:"1.5rem"}}>Quick Login</h4>
                     <FormGroup row className="p-2">
                         <Label className="col-4 text-center" for="Username" ><h5>Username:</h5></Label>
                         <div className="col-8 col-md-6 justify-content-center">
                             <Input type="string" style={{height:"2rem"}} id="Username" placeholder="Give your Username"
                                 value={this.state.username} onChange={(e) => this.handleUserChange(e)} />
                             <FormText>
-                                {this.state.userError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.userError}</h6>}
+                                {this.state.userError === '' ? null : <h6 >{this.state.userError}</h6>}
                             </FormText>
                         </div>
                     </FormGroup>
@@ -111,16 +113,16 @@ class Login extends React.Component{
                             <Input type="password" style={{height:"2rem"}} id="Password" placeholder="Give your Password"
                                 value={this.state.password} onChange={(e) => this.handlePassChange(e)} />
                             <FormText>
-                                {this.state.passError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.passError}</h6>}
+                                {this.state.passError === '' ? null : <h6 >{this.state.passError}</h6>}
                             </FormText>
                         </div>
                     </FormGroup>
                     <FormText>
-                        {this.state.fetchError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.fetchError}</h6>}
+                        {this.state.fetchError === '' ? null : <h6 >{this.state.fetchError}</h6>}
                     </FormText>
                     <FormGroup className="row p-2">
                         <div className="col-4 offset-7">
-                            <Button style={{backgroundColor:"rgb(50,50,50)",color:"floralWhite"}}
+                            <Button
                                 type = "submit" onClick={(e) => this.submitForm(e)}>Login</Button>
                         </div>
                     </FormGroup>

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Card, Button, CardTitle } from 'reactstrap';
+import { Card } from 'reactstrap';
 import propTypes from 'prop-types';
-import { hostname } from '../hostname';
+import { hostname } from '../../hostname';
 import { withRouter } from 'react-router-dom';
 
-class TypeView extends React.Component
+class OpenViewType extends React.Component
 {
     constructor(props) {
         super(props);
@@ -37,61 +37,71 @@ class TypeView extends React.Component
             })
         }
 
+    deleteType()
+    {
+        const headers = {
+            method: 'DELETE',
+            credentials: 'include'
+        };
+
+        fetch( `${hostname}types/${this.props.match.params.id}`, headers)
+        .then(response => response.json())
+        .then(json => 
+            {
+                console.log(json);
+                this.props.history.push(`/Home`);
+            })
+            .catch((err) => {
+                console.log(err)
+                this.setState({
+                    fetchError : 'type delete Went Wrong !!!'
+                });
+            })
+    }
+
 render()
 {
     const {fetchError, type } = this.state;
-
     if (fetchError !== '')
      {
          return (
-            <h3 style={{color:"floralWhite"}}>{fetchError}</h3>
+            <h3 style={{color:"#DE9E48",textAlign:"center"}}>{fetchError}</h3>
     )}
     else if(type === null)
     {
         return (
-             <h3 style={{color:"floralWhite"}}>Loading</h3>
+             <h3 style={{color:"#DE9E48",textAlign:"center"}}>Loading</h3>
         )
     }
     else
     {
         return(
             <div className="container" >
+                
                 <div className="row p-2">
-                    <div>Type Name: {type.name}</div>
+                <h4 className="col-5 m-1" >Type Details</h4>
                 </div>
-                <div className="row p-2" >
-                    <div>Type Id: {type._id}</div>
-                </div>
-                <div className="row p-2">
-                    <div>Description: {type.description}</div>
-                </div>
+                <Card body outline color="secondary" className="col-10 m-1">
+
+                <div className="row p-2 m-1">Type Name: {type.name}</div>   
+                
+                <div className="row p-2 m-1">Description: {type.description}</div>
+
                 <div className="row p-2">
                     <div className="container">
-                    <div className="row">Tools in this Type:</div>
-                    <div className="row">
-                    {
-                    type.tools.length === 0 ? <h5>No Tools by now</h5>
-                    :
-                     type.tools.reverse().map((tool,i) =>{
-                         return(
-                              <Card body outline color="secondary" key ={i} className="col-5 m-2">
-                                    <CardTitle tag="h5">{tool}</CardTitle>
-                                    <Button onClick={() =>  this.props.history.push(`/ToolView/${tool}`)} >View Tool</Button>
-                                </Card>
-                        )})
-                    }
+                    <div className="row m-1">Tools available this Type: {type.tools.length}
                     </div>
-                    </div>
-                    
+                    </div>    
 
                 </div>
+                </Card>
             </div>
         )
     }
 }
 }
 
-TypeView.propTypes = {
+OpenViewType.propTypes = {
     match: propTypes.shape({
       params: propTypes.shape({
         id: propTypes.string,
@@ -101,4 +111,4 @@ TypeView.propTypes = {
   };
 
   
-export default withRouter(TypeView);
+export default withRouter(OpenViewType);

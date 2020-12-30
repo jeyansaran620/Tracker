@@ -1,32 +1,50 @@
 const http = require('http');
 const bodyParser = require('body-parser');
+
 const cors = require('cors');
 
 const express = require('express');
 const mongoose = require('mongoose');
 
 var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+var MongoDBStore = require('connect-mongodb-session')(session);
 
-
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
+const username = process.env.User || 'jeyansaran620';
+const password = process.env.Pass || 'Jeyan@Mongo123';
+const Client = process.env.Client || 'http://localhost:3000';
 
 const app = express();
 
-app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
+app.use(cors({credentials: true, origin: `${Client}`}));
 
 app.use(bodyParser.json());
+
+const url =  `mongodb+srv://${username}:${password}@tracker.l5yyx.mongodb.net/<dbname>?retryWrites=true&w=majority`;
+
+//const url = 'mongodb://localhost:27017/Tracker';
+
+var store = new MongoDBStore({
+  uri:url,
+  collection: 'mySessions'
+});
+ 
+// Catch errors
+store.on('error', function(error) {
+  console.log(error);
+});
+
+app.set('trust proxy', 1);
 
 app.use(session({
   name: 'session-id',
   secret: '12345-67890-09876-54321',
   saveUninitialized: false,
   resave: false,
-  store: new FileStore()
+  cookie: { secure: true,
+    sameSite : "None"},
+  store
 }));
-
-
-const url = 'mongodb://localhost:27017/Tracker';
 
 const connect = mongoose.connect(url,{
     useUnifiedTopology: true,
@@ -40,8 +58,42 @@ connect.then(() => {
 .catch((err) => console.log(err));
 
 
-app.get('/login', (req, res, next) => {
+const Tools = require('./schemas/tools');
+const Types = require('./schemas/types');
 
+
+app.get('/types/list', ((req,res,next) => {
+  Types.find({},{_id:1,name:1})
+  .then((Types) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(Types);
+  }, (err) => next(err))
+  .catch((err) => next(err));
+}));
+
+app.get('/types/:typeID',((req,res,next) => {
+  Types.findById(req.params.typeID)
+  .then((type) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(type);
+  }, (err) => next(err))
+  .catch((err) => next(err));
+}));
+
+app.get('/tools/availInType/:id', ((req,res,next) => {
+  Tools.find({type:req.params.id,available:true},{_id:1})
+  .then((Types) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(Types);
+  }, (err) => next(err))
+  .catch((err) => next(err));
+}));
+
+app.get('/login', (req, res, next) => {
+  
   if(!req.session.user) {
     var authHeader = req.headers.authorization;
     
@@ -102,7 +154,7 @@ function auth (req, res, next) {
 
     console.log(req.session);
 
-  if(!req.session) {
+  if(!req.session.user) {
       var err = new Error('You are not the authenticated user!');
       err.status = 403;
       return next(err);
@@ -118,6 +170,7 @@ function auth (req, res, next) {
     }
   }
 }
+
 
 app.use(auth);
 

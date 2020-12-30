@@ -43,7 +43,7 @@ CustomersRouter.route('/')
 
 CustomersRouter.route('/list')
 .get((req,res,next) => {
-    Customers.find({},{_id:1})
+    Customers.find({},{_id:1,mailId:1})
     .then((Customers) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');

@@ -3,17 +3,13 @@ import {  Button, Form, FormGroup, Label, Input,FormText } from 'reactstrap';
 import propTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { hostname } from '../hostname';
-import Select from 'react-select';
-import { customStyles } from './react-select-style';
 
-class AddTool extends React.Component{
+class ModTool extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            types : [],
-            typeName : {},
+            typeName : '',
             toolDef: 'Nothing',
-            nameError:'',
             defError: '',
             fetchError: ''
         };
@@ -26,25 +22,20 @@ class AddTool extends React.Component{
             credentials: 'include'
         };
 
-        fetch( `${hostname}types/`, headers)
+      
+        fetch( `${hostname}tools/${this.props.match.params.id}`, headers)
         .then(response => response.json())
         .then(json => 
             {
-                console.log(json);
-                let types = [];
-                json.map((type) => types.push(
-                    {
-                        label : type.name,
-                        value:type._id
-                    }));
-                this.setState({
-                    types
+               this.setState({
+                    typeName : json.type,
+                    toolDef : json.defects
                 })
             })
             .catch((err) => {
                 console.log(err)
                 this.setState({
-                    fetchError : 'Something Went Wrong !!!'
+                    fetchError : 'type fetch Went Wrong !!!'
                 });
             })
     }
@@ -62,32 +53,30 @@ class AddTool extends React.Component{
     {
         e.preventDefault();
        
-        if (!this.state.typeName.value  || !this.checkValid(this.state.toolDef))
+        if (!this.checkValid(this.state.toolDef))
         {
         this.setState({
-            nameError : this.state.typeName.value ? '' : 'Please Select a type',
             defError : this.checkValid(this.state.toolDef) ? '' : 'Provide a valid type Description' 
         });
         }
         else
         {
             const values = {
-                type : this.state.typeName.value,
                 defects : this.state.toolDef
             }
             const headers = {
-                method: 'POST',
+                method: 'PUT',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values)
             };
 
-            fetch( `${hostname}tools`, headers)
+            fetch( `${hostname}tools/${this.props.match.params.id}`, headers)
             .then(response => response.json())
             .then(json => 
                 {
                     console.log(json);
-                    this.props.history.push(`/ViewTool/${json._id}`);
+                    this.props.history.push(`/Viewtool/${this.props.match.params.id}`);
                 })
                 .catch((err) => {
                     console.log(err)
@@ -96,15 +85,6 @@ class AddTool extends React.Component{
                     });
                 })
         }
-    }
-
-    handleNameChange(name)
-    {
-        this.setState({
-            nameError : '',
-            typeName : name,
-            fetchError: ''
-        });
     }
 
     handleDefChange(event)
@@ -120,17 +100,13 @@ class AddTool extends React.Component{
     {
         return (
             <div className="container">
+                
                 <Form className="form" onSubmit={(e) => this.submitForm(e)}>
-                <h4 style={{padding:"1.5rem"}}>New Tool</h4>
+                    <h4 style={{color:"floralWhite",padding:"1.5rem"}}>Modify Tool</h4>
                     <FormGroup row className="p-2">
                         <Label className="col-4 text-center" for="toolType" ><h5>Type:</h5></Label>
                         <div className="col-8 col-md-6 justify-content-center">
-                        <Select options={this.state.types}
-                         style={{height:"2rem"}} id="toolType" placeholder="Select a Type"  styles={customStyles}
-                                value={this.state.typeName} onChange={(e) => this.handleNameChange(e)} />
-                            <FormText>
-                                {this.state.nameError === '' ? null : <h6 >{this.state.nameError}</h6>}
-                            </FormText>
+                            <h4>{this.state.typeName}</h4>
                         </div>
                     </FormGroup>
 
@@ -140,23 +116,22 @@ class AddTool extends React.Component{
                             <Input type="string" style={{height:"2rem"}} id="toolDef" placeholder="Add Tool defects"
                                 value={this.state.toolDef} onChange={(e) => this.handleDefChange(e)} />
                             <FormText>
-                                {this.state.defError === '' ? null : <h6 >{this.state.defError}</h6>}
+                                {this.state.defError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.defError}</h6>}
                             </FormText>
                         </div>
                     </FormGroup>
+
                     <FormText>
-                        {this.state.fetchError === '' ? null : <h6 >{this.state.fetchError}</h6>}
+                        {this.state.fetchError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.fetchError}</h6>}
                     </FormText>
-                    <FormGroup className="row p-2">
-                      <div className="col-4 offset-1">
+
+                     <FormGroup className="row p-2">
+                        <div className="col-4 offset-7">
                             <Button
-                                onClick={() => this.props.history.push("/AddType")}>Add Type</Button>
-                        </div>
-                        <div className="col-4 offset-2">
-                            <Button
-                                type = "submit" onClick={(e) => this.submitForm(e)}>Add Tool</Button>
+                                type = "submit" onClick={(e) => this.submitForm(e)}>Modify Tool</Button>
                         </div>
                     </FormGroup>
+
                 </Form>
             
             </div>
@@ -164,8 +139,13 @@ class AddTool extends React.Component{
     } 
 }
 
-AddTool.propTypes = {
-    history: propTypes.object
-};
+ModTool.propTypes = {
+    history: propTypes.object,
+    match: propTypes.shape({
+      params: propTypes.shape({
+        id: propTypes.string,
+      }),
+    })
+  };
 
-export default withRouter(AddTool);
+export default withRouter(ModTool);

@@ -4,7 +4,7 @@ import propTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { hostname } from '../hostname';
 
-class AddCustomer extends React.Component{
+class ModCustomer extends React.Component{
     constructor(props) {
         super(props);
 
@@ -12,14 +12,37 @@ class AddCustomer extends React.Component{
             cusName : '',
             cusMail : '',
             cusLoc : '',
-            nameError :'',
-            mailError: '',
             locError: '',
             fetchError: ''
         };
 
     }
     
+    componentDidMount()
+    {
+        const headers = {
+            method: 'GET',
+            credentials: 'include'
+        };
+
+        fetch( `${hostname}customers/${this.props.match.params.id}`, headers)
+        .then(response => response.json())
+        .then(json => 
+            {
+               this.setState({
+                    cusName : json.name,
+                    cusMail : json.mailId,
+                    cusLoc : json.location
+                })
+            })
+            .catch((err) => {
+                console.log(err)
+                this.setState({
+                    fetchError : 'customer fetch Went Wrong !!!'
+                });
+            })
+    }
+
     checkValid(str)
     {
         if(str.length < 3)
@@ -29,44 +52,33 @@ class AddCustomer extends React.Component{
          return true
     }
 
-    checkMail(str)
-    {
-        let re =  /^[ ]*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})[ ]*$/i;
-
-        return re.test(str);
-    }
-
     submitForm(e)
     {
         e.preventDefault();
-        if (!this.checkValid(this.state.cusName) || !this.checkMail(this.state.cusMail)  || !this.checkValid(this.state.cusLoc))
+        if ( !this.checkValid(this.state.cusLoc))
         {
         this.setState({
-            nameError : this.checkValid(this.state.cusName) ? '' : 'Provide a valid customer Name',
-            locError : this.checkValid(this.state.cusLoc) ? '' : 'Provide a valid customer Location',
-            mailError : this.checkMail(this.state.cusMail) ? '' : 'Provide a valid customer Mail' 
+            locError : this.checkValid(this.state.cusLoc) ? '' : 'Provide a valid customer Location'
         });
         }
         else
         {
             const values = {
-                name : this.state.cusName,
-                mailId : this.state.cusMail,
                 location : this.state.cusLoc
             }
             const headers = {
-                method: 'POST',
+                method: 'PUT',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values)
             };
 
-            fetch( `${hostname}customers`, headers)
+            fetch( `${hostname}customers/${this.props.match.params.id}`, headers)
             .then(response => response.json())
             .then(json => 
                 {
                     console.log(json);
-                    this.props.history.push(`/ViewCustomer/${json._id}`);
+                    this.props.history.push(`/ViewCustomer/${this.props.match.params.id}`);
                 })
                 .catch((err) => {
                     console.log(err)
@@ -75,15 +87,6 @@ class AddCustomer extends React.Component{
                     });
                 })
         }
-    }
-
-    handleNameChange(event)
-    {
-        this.setState({
-            cusName : event.target.value,
-            nameError : this.checkValid(event.target.value) ? '' : 'Provide a valid customer Name',
-            fetchError: ''
-        });
     }
 
     handleLocChange(event)
@@ -95,60 +98,43 @@ class AddCustomer extends React.Component{
         });
     }
 
-    handleMailChange(event)
-    {
-        this.setState({
-            cusMail: event.target.value,
-            mailError : this.checkMail(event.target.value) ? '' : 'Provide a valid customer Mail',
-            fetchError: ''
-        });
-    }
-
     render()
     {
         return (
             <div className="container">
                 <Form className="form" onSubmit={(e) => this.submitForm(e)}>
-                  <h4 style={{padding:"1.5rem"}}>New Customer</h4>
+                    <h4 style={{color:"floralWhite",padding:"1.5rem"}}>Modify Customer</h4>
                     <FormGroup row className="p-2">
-                        <Label className="col-4 text-center" for="cusName" ><h5>Name:</h5></Label>
+                        <Label className="col-4 text-center" ><h5>Name:</h5></Label>
                         <div className="col-8 col-md-6 justify-content-center">
-                            <Input type="string" style={{height:"2rem"}} id="cusName" placeholder="Give Type Name"
-                                value={this.state.cusName} onChange={(e) => this.handleNameChange(e)} />
-                            <FormText>
-                                {this.state.nameError === '' ? null : <h6 >{this.state.nameError}</h6>}
-                            </FormText>
+                            <h4>{this.state.cusName}</h4>
                         </div>
                     </FormGroup>
 
                     <FormGroup row className="p-2">
-                        <Label className="col-4 text-center" for="cusMail" ><h5>E-Mail:</h5></Label>
+                        <Label className="col-4 text-center" ><h5>E-Mail:</h5></Label>
                         <div className="col-8 col-md-6 justify-content-center">
-                            <Input type="email" style={{height:"2rem"}} id="cusMail" placeholder="Give Type Description"
-                                value={this.state.cusMail} onChange={(e) => this.handleMailChange(e)} />
-                            <FormText>
-                                {this.state.mailError === '' ? null : <h6 >{this.state.mailError}</h6>}
-                            </FormText>
+                        <h4>{this.state.cusMail}</h4>
                         </div>
                     </FormGroup>
 
                     <FormGroup row className="p-2">
                         <Label className="col-4 text-center" for="cusLoc" ><h5>Location:</h5></Label>
                         <div className="col-8 col-md-6 justify-content-center">
-                            <Input type="string" style={{height:"2rem"}} id="cusLoc" placeholder="Give Type Name"
+                            <Input type="string" style={{height:"2rem"}} id="cusLoc" placeholder="Update Location"
                                 value={this.state.cusLoc} onChange={(e) => this.handleLocChange(e)} />
                             <FormText>
-                                {this.state.locError === '' ? null : <h6 >{this.state.locError}</h6>}
+                                {this.state.locError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.locError}</h6>}
                             </FormText>
                         </div>
                     </FormGroup>
                     <FormText>
-                        {this.state.fetchError === '' ? null : <h6 >{this.state.fetchError}</h6>}
+                        {this.state.fetchError === '' ? null : <h6 style={{color:"floralWhite"}}>{this.state.fetchError}</h6>}
                     </FormText>
                     <FormGroup className="row p-2">
                         <div className="col-4 offset-7">
                             <Button
-                                type = "submit" onClick={(e) => this.submitForm(e)}>Add Customer</Button>
+                                type = "submit" onClick={(e) => this.submitForm(e)}>Update Customer</Button>
                         </div>
                     </FormGroup>
                 </Form>
@@ -158,8 +144,14 @@ class AddCustomer extends React.Component{
     } 
 }
 
-AddCustomer.propTypes = {
-    history: propTypes.object
-};
+ModCustomer.propTypes = {
+    history: propTypes.object,
+    match: propTypes.shape({
+      params: propTypes.shape({
+        id: propTypes.string,
+      }),
+    })
+  };
 
-export default withRouter(AddCustomer);
+  
+export default withRouter(ModCustomer);

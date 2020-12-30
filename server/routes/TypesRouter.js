@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const Types = require('../schemas/types');
+const Tools = require('../schemas/tools');
 
 const TypesRouter = express.Router();
 
@@ -41,40 +42,8 @@ TypesRouter.route('/')
     .catch((err) => next(err));    
 });
 
-TypesRouter.route('/list')
-.get((req,res,next) => {
-    Types.find({},{_id:1})
-    .then((Types) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(Types);
-    }, (err) => next(err))
-    .catch((err) => next(err));
-})
-.post((req, res) => {
-    res.statusCode = 403;
-    res.end('POST operation not supported on /types/list');
-})
-.put((req, res) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /types/list');
-})
-.delete((req, res) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /types/list');
-});
-
 
 TypesRouter.route('/:typeID')
-.get((req,res,next) => {
-    Types.findById(req.params.typeID)
-    .then((type) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(type);
-    }, (err) => next(err))
-    .catch((err) => next(err));
-})
 .post((req, res) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /Types/'+ req.params.typeID);
@@ -93,12 +62,18 @@ TypesRouter.route('/:typeID')
 .delete((req, res, next) => {
     Types.findByIdAndRemove(req.params.typeID)
     .then((resp) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(resp);
+
+        Tools.remove({type:resp._id})
+        .then(() =>
+        {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json(resp);
+        }, (err) => next(err))
+        .catch((err) => next(err));
+
     }, (err) => next(err))
     .catch((err) => next(err));
 });
-
 
 module.exports = TypesRouter;
